@@ -19,7 +19,7 @@ def create_app():
     db.init_app(app)
 
     app.register_blueprint(auth, url_prefix='/')
-    app.register_blueprint(books_more, url_prefix='/book')
+    app.register_blueprint(books_more, url_prefix='/')
 
     return app
 
