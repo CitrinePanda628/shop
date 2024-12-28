@@ -1,0 +1,68 @@
+<!-- cart.html -->
+{% extends 'home/main.html' %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+<div class='container'>
+    <div class="row">
+        <div class="col-md-8">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Book Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Author</th>
+                        <th scope="col">Rating</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in cart %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ book.name }}</td>
+                        <td>{{ book.price }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.rating }}</td>
+                        <td>{{ book.category }}</td>
+                        <td>
+                            <form action="/remove-from-cart/{{ book.id }}" method="POST">
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">Your cart is empty.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-4">
+            <h3>Cart Summary</h3>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Total Books: </strong> {{ cart | length }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Total Price: </strong> $
+                    {% set total = 0 %}
+                    {% for book in cart %}
+                        {% set total = total + book.price %}
+                    {% endfor %}
+                    {{ total | round(2) }}
+                </li>
+            </ul>
+            <form action="/purchase" method="POST">
+                <button type="submit" class="btn btn-success mt-3">Proceed to Purchase</button>
+            </form>
+        </div>
+    </div>
+    
+    <a href="/books" class="btn btn-primary mt-3">Back to Book List</a>
+</div>
+{% endblock %}

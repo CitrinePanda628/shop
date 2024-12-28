@@ -13,11 +13,13 @@
     <p><strong>Description:</strong> {{ book.description }}</p>
     <p><strong>Category:</strong> {{ book.category }}</p>
     <p><strong>Book ID:</strong> {{ book.id }}</p>    
-
+    {%if book.stock <= 0%}
+    <p class="text-danger">Not in stock</p>
+    {%else%}
     <form action="/add-to-cart/{{ book.id }}" method="POST">
         <button type="submit" class="btn btn-success">Add to Cart</button>
     </form>
-
+    {%endif%}
     <!-- Back button to return to books list -->
     <a href="/books" class="btn btn-primary mt-3">Back to Book List</a>
 </div>

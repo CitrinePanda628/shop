@@ -55,6 +55,7 @@ if __name__ == '__main__':
 # │   │   ├── main.html
 # │   │   ├── web.html
 # │   │   ├── book_details.html
+# │   │   ├── cart.html
 # └── script/
 # │   └── auth.py
 # │   └── database.py
