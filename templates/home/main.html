@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,60 +11,210 @@
     />
     <link
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
       crossorigin="anonymous"
     />
-<!-- this is main html -->
-    <title>
-        {% block title %}{% endblock %}
-    </title>
+    <title>{% block title %}{% endblock %}</title>
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+
+      /* Main content area */
+      .main-content {
+        padding-top: 20px;
+      }
+
+      /* Customizing the navbar */
+      .navbar {
+        z-index: 999;
+      }
+
+      .navbar .form-inline input,
+      .navbar .form-inline select {
+        margin-left: 5px;
+      }
+
+      /* Aligning items in navbar */
+      .navbar .left-nav-items {
+        display: flex;
+        justify-content: flex-start;
+        flex: 1;
+      }
+
+      .navbar .right-nav-items {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      /* Filter form styling */
+      .filter-form {
+        display: none;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px;
+      }
+
+      .filter-form input,
+      .filter-form select {
+        width: 150px;
+        margin-bottom: 10px;
+      }
+
+      /* Toggle button styling */
+      .toggle-filters-btn {
+        background-color: transparent;
+        border: none;
+        color: #ffffff;
+      }
+
+      /* Hide other navbar items when filter is shown */
+      .navbar .left-nav-items {
+        display: flex;
+      }
+
+      .navbar .left-nav-items.hide {
+        display: none;
+      }
+
+      /* Toggle active class styling */
+      .filter-form.active {
+        display: flex;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="/#">Logout</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/cart">Cart</a>
-          </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="filter" placeholder="filter" aria-label="Search">
-            <button class="btn bt-outline-success my-2 my-sm-0" type="submit">filter</button>
-        </form>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn bt-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <!-- Left side of navbar -->
+        <div class="left-nav-items">
+          <a class="navbar-brand" href="/">Book Store</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="/books">Books</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/cart">Cart
+                  {% set cart_count = session.get('cart', []) | length %}
+                  {% if cart_count > 0 %}
+                    <span class="badge badge-light">{{ cart_count }}</span>
+                  {% endif %}
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Right side of navbar for filters -->
+        <div class="right-nav-items">
+          <!-- Toggle button to show/hide filters -->
+          <button
+            class="btn btn-outline-light toggle-filters-btn"
+            type="button"
+            id="toggle-filters-btn"
+          >
+            <i class="fas fa-filter"></i> Filters
+          </button>
+
+          <!-- Filter Form in Navbar (Initially hidden) -->
+          <div class="filter-form" id="filter-form">
+            <form class="form-inline">
+              <!-- Book Name Filter -->
+              <input class="form-control" type="search" placeholder="Name" aria-label="Search" />
+
+              <!-- Author Name Filter -->
+              <input class="form-control" type="search" placeholder="Author" aria-label="Search" />
+
+              <!-- Rating Filter -->
+              <select class="form-control" aria-label="Rating">
+                <option value="">Rating</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+              </select>
+
+              <!-- Price Filter -->
+              <select class="form-control" aria-label="Price">
+                <option value="">Price</option>
+                <option value="low-high">Low to High</option>
+                <option value="high-low">High to Low</option>
+              </select>
+
+              <!-- Category Filter -->
+              <select class="form-control" aria-label="Category">
+                <option value="">Category</option>
+                <option value="action">Action</option>
+                <option value="romance">Romance</option>
+                <option value="poetry">Poetry</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="mystery">Mystery</option>
+                <option value="thriller">Thriller</option>
+                <option value="sci-fi">Sci-Fi</option>
+                <option value="biography">Biography</option>
+              </select>
+
+              <button class="btn btn-outline-light" type="submit">Apply</button>
+            </form>
+          </div>
+        </div>
       </div>
     </nav>
 
-    <!-- Main content block -->
-    {% block content %}{% endblock %}
+    <!-- Main content area -->
+    <div class="main-content">
+      {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+      <div class="container">
+        <small>&copy; 2024 Book Store. All rights reserved.</small>
+      </div>
+    </footer>
 
     <!-- Script includes -->
     <script
-        src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5/5hb7O9v1d6pT4PeRM3F+3jfFjE6oTFbW8P2z5"
+      crossorigin="anonymous"
     ></script>
     <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-fQybjgWLrvvRgtW6B6SLPWxwtFqJpjn9OhcJL1/7C2Ofm09Qj8CU/NF9iLY+64z4"
+      crossorigin="anonymous"
     ></script>
-    <script
-        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"
-    ></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- Custom Script to Toggle Filters and Navbar Items -->
+    <script>
+      const toggleBtn = document.getElementById("toggle-filters-btn");
+      const filterForm = document.getElementById("filter-form");
+      const navbarItems = document.querySelector(".navbar .left-nav-items");
+
+      toggleBtn.addEventListener("click", () => {
+        // Toggle filter form visibility
+        filterForm.classList.toggle("active");
+
+        // Hide or show left navbar items based on the filter form visibility
+        navbarItems.classList.toggle("hide");
+      });
+    </script>
   </body>
 </html>

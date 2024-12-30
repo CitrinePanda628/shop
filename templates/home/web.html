@@ -1,64 +1,80 @@
 {% extends 'home/main.html' %}
-<!-- this is web html -->
+
 {% block title %}Books{% endblock %}
 
 {% block content %}
-<form method="POST" action="{{ url_for('books_more.generate_books') }}">
-    <div class="slider-container text-center bg-dark text-white p-4">
+<div class="container-fluid">
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-12 col-md-12 col-sm-12">
+      <!-- Slider Container -->
+      <div class="slider-container text-center bg-primary text-white p-4 mb-4 rounded">
         <h3>Generate Random Books</h3>
-        <p>Slider Value: <span id="slider-value">{{ num_books }}</span></p>
-        <input type="range" id="book-slider" min="1" max="100" value="{{ num_books }}" class="form-control-range" name="num_books">
-        <br>
-        <button type="submit" class="btn btn-light mt-3" id="generate-button">
-            Generate <span id="slider-count">{{ num_books }}</span> Random Books
-        </button>
-    </div>
-</form>
+        <p>
+          <strong>Slider Value:</strong>
+          <span id="slider-value" class="badge badge-light">{{ num_books }}</span>
+        </p>
+        <form method="POST" action="{{ url_for('books_more.generate_books') }}">
+          <input
+            type="range"
+            id="book-slider"
+            min="1"
+            max="100"
+            value="{{ num_books }}"
+            class="custom-range"
+            name="num_books"
+            aria-label="Number of books"
+            aria-describedby="slider-value"
+          />
+          <button type="submit" class="btn btn-light mt-3">
+            Generate <span id="slider-count">{{ num_books }}</span> Books
+          </button>
+        </form>
+      </div>
 
-<div class="container text-center">
-    <div class="row" id="content"> 
+      <!-- Book Cards -->
+      <div class="row">
         {% for book in books %}
-        <div class="col-sm-4 mb-4">  
-            <div class="card" style="width:18rem;">
-                <a href="/book/{{ book.id }}">
-                    <img src="{{ book.img }}" class="card-img-top" alt="Random book image">
-                </a>
-                <div class="card-body">
-                    <h5 class="card-title">{{ book.name }}</h5>
-                    <p class="card-text" style="font-size: small;">{{ book.description }}</p>  
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">{{ book.author }}</li>
-                    <li class="list-group-item">${{ book.price }}</li> 
-                    <li class="list-group-item {% if book.rating <= 2 %}text-danger{% elif book.rating <= 3.5 %}text-warning{% else %}text-success{% endif %}">{{ book.rating }} / 5</li> 
-                    <li class="list-group-item {% if book.stock <= 0 %}text-danger{% elif book.stock <= 10 %}text-warning{% else %}text-success{% endif %}">
-                        {% if book.stock <= 0 %}Not in stock{% else %}{{ book.stock }} in stock{% endif %}
-                    </li> 
-                    <li class="list-group-item"><strong>Category:</strong> {{ book.category }}</li> 
-                </ul>
-                <div class="card-body">
-                    <a href="/book/{{ book.id }}" class="btn btn-primary">View Details</a>
-                </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <img src="{{ book.img }}" class="card-img-top" alt="{{ book.name }}" />
+            <div class="card-body">
+              <h5 class="card-title">{{ book.name }}</h5>
+              <p class="card-text text-muted">{{ book.description }}</p>
             </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><strong>Author:</strong> {{ book.author }}</li>
+              <li class="list-group-item"><strong>Price:</strong> ${{ book.price }}</li>
+              <li class="list-group-item {% if book.rating <= 2 %}text-danger{% elif book.rating <= 3.5 %}text-warning{% else %}text-success{% endif %}">
+                <strong>Rating:</strong> {{ book.rating }} / 5
+              </li>
+              <li class="list-group-item {% if book.stock <= 0 %}text-danger{% elif book.stock <= 10 %}text-warning{% else %}text-success{% endif %}">
+                {% if book.stock <= 0 %}Out of Stock{% else %}{{ book.stock }} Available{% endif %}
+              </li>
+              <li class="list-group-item"><strong>Category:</strong> {{ book.category }}</li>
+            </ul>
+            <div class="card-body text-center">
+              <a href="/book/{{ book.id }}" class="btn btn-primary">View Details</a>
+            </div>
+          </div>
         </div>
         {% endfor %}
+      </div>
     </div>
+  </div>
 </div>
 
 {% block javascript %}
-<script type="text/javascript">
-    const slider = document.getElementById('book-slider');
-    const output = document.getElementById('slider-count');
-    const sliderValueDisplay = document.getElementById('slider-value');
+<script>
+  const slider = document.getElementById("book-slider");
+  const sliderValue = document.getElementById("slider-value");
+  const sliderCount = document.getElementById("slider-count");
 
-    output.innerHTML = slider.value;
-    sliderValueDisplay.innerHTML = slider.value;
-
-    slider.oninput = function() {
-        output.innerHTML = this.value;
-        sliderValueDisplay.innerHTML = this.value;
-    };
+  // Update the displayed value dynamically as the slider moves
+  slider.oninput = function () {
+    sliderValue.textContent = this.value;
+    sliderCount.textContent = this.value;
+  };
 </script>
 {% endblock %}
-
 {% endblock %}
