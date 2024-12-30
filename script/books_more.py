@@ -28,6 +28,7 @@ def create_random_book(index):
 @books_more.route('/books', methods=['GET', 'POST'])
 def generate_books():
     if request.method == 'POST':
+        session.clear()
         num_books = int(request.form.get('num_books', 10))
         session['books'] = [create_random_book(i) for i in range(num_books)]
     
@@ -95,13 +96,3 @@ def purchase():
     return redirect(url_for('books_more.view_cart'))
 
 
-
-@books_more.route('/filter/<string:filter>', methods=['POST'])
-def filter(filter):
-    books = session.get('books', [])
-    
-
-
-@books_more.route('/search/<string:filter>', methods=['POST'])
-def search(search):
-    books = session.get('books', [])
