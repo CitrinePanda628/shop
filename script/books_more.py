@@ -28,7 +28,6 @@ def create_random_book(index):
 @books_more.route('/books', methods=['GET', 'POST'])
 def generate_books():
     if request.method == 'POST':
-        session.clear()
         num_books = int(request.form.get('num_books', 10))
         session['books'] = [create_random_book(i) for i in range(num_books)]
     
@@ -63,8 +62,8 @@ def view_cart():
 
 @books_more.route('/logout', methods=['GET'])
 def logout():
-    session.clear()  # Clear the session for logout
-    return redirect(url_for('books_more.generate_books'))
+    session.clear()  
+    return redirect(url_for('auth.login'))
 
 
 @books_more.route('/remove-from-cart/<string:id>', methods=['POST'])
@@ -81,17 +80,36 @@ def purchase():
     cart = session.get('cart', [])
     books = session.get('books', [])
 
-    # Process each book in the cart
     for cart_item in cart:
-        # Find the book in the books list
         selected_book = next((book for book in books if book['id'] == cart_item['id']), None)
         if selected_book:
-            # Decrease stock of the book by 1
             selected_book['stock'] -= 1
-
-    # Clear the cart after purchase (or leave it as is, depending on your preference)
     session['cart'] = []
 
     # Redirect to cart view after purchase
     return redirect(url_for('books_more.view_cart'))
 
+@books_more.route('/filter', methods=['POST', 'GET'])
+def filter_books():
+    books = session.get('books', [])
+    
+    category = request.form.get('category')
+    rating = request.form.get('rating')
+    price_order = request.form.get('price')
+    author = request.form.get('author')
+    name = request.form.get('name')
+
+    filtered_books = books
+
+    # Apply filters one by one
+    if category:
+        filtered_books = [book for book in filtered_books if book['category'].lower() == category.lower()]
+    if rating:
+        filtered_books = [book for book in filtered_books if book['rating'] >= float(rating)]
+
+    if author:
+        filtered_books = [book for book in filtered_books if author.lower() in book['author'].lower()]
+    if name:
+        filtered_books = [book for book in filtered_books if name.lower() in book['name'].lower()]
+
+    return render_template('home/web.html', books=filtered_books, num_books=len(filtered_books))

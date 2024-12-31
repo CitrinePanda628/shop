@@ -53,6 +53,9 @@
         flex-wrap: wrap;
         justify-content: flex-start;
         gap: 8px;
+        background-color: #343a40; /* Match navbar background */
+        padding: 10px;
+        border-radius: 5px;
       }
 
       .filter-form input,
@@ -61,25 +64,14 @@
         margin-bottom: 10px;
       }
 
-      /* Toggle button styling */
-      .toggle-filters-btn {
-        background-color: transparent;
-        border: none;
-        color: #ffffff;
-      }
-
-      /* Hide other navbar items when filter is shown */
-      .navbar .left-nav-items {
-        display: flex;
-      }
-
-      .navbar .left-nav-items.hide {
-        display: none;
-      }
-
       /* Toggle active class styling */
       .filter-form.active {
         display: flex;
+      }
+
+      /* Hide other navbar items when filter is shown */
+      .navbar .left-nav-items.hide {
+        display: none;
       }
     </style>
   </head>
@@ -134,15 +126,10 @@
 
           <!-- Filter Form in Navbar (Initially hidden) -->
           <div class="filter-form" id="filter-form">
-            <form class="form-inline">
-              <!-- Book Name Filter -->
-              <input class="form-control" type="search" placeholder="Name" aria-label="Search" />
-
-              <!-- Author Name Filter -->
-              <input class="form-control" type="search" placeholder="Author" aria-label="Search" />
-
-              <!-- Rating Filter -->
-              <select class="form-control" aria-label="Rating">
+            <form action="/filter" method="POST" class="form-inline flex-wrap">
+              <input class="form-control mb-2 mr-2" type="search" placeholder="Name" name="name" />
+              <input class="form-control mb-2 mr-2" type="search" placeholder="Author" name="author" />
+              <select class="form-control mb-2 mr-2" name="rating">
                 <option value="">Rating</option>
                 <option value="1">1 Star</option>
                 <option value="2">2 Stars</option>
@@ -150,16 +137,7 @@
                 <option value="4">4 Stars</option>
                 <option value="5">5 Stars</option>
               </select>
-
-              <!-- Price Filter -->
-              <select class="form-control" aria-label="Price">
-                <option value="">Price</option>
-                <option value="low-high">Low to High</option>
-                <option value="high-low">High to Low</option>
-              </select>
-
-              <!-- Category Filter -->
-              <select class="form-control" aria-label="Category">
+              <select class="form-control mb-2 mr-2" name="category">
                 <option value="">Category</option>
                 <option value="action">Action</option>
                 <option value="romance">Romance</option>
@@ -167,12 +145,12 @@
                 <option value="fantasy">Fantasy</option>
                 <option value="mystery">Mystery</option>
                 <option value="thriller">Thriller</option>
-                <option value="sci-fi">Sci-Fi</option>
+                <option value="Science Fiction">Science Fiction</option>
                 <option value="biography">Biography</option>
               </select>
-
-              <button class="btn btn-outline-light" type="submit">Apply</button>
+              <button class="btn btn-primary mb-2" type="submit">Apply</button>
             </form>
+            
           </div>
         </div>
       </div>
@@ -209,10 +187,7 @@
       const navbarItems = document.querySelector(".navbar .left-nav-items");
 
       toggleBtn.addEventListener("click", () => {
-        // Toggle filter form visibility
         filterForm.classList.toggle("active");
-
-        // Hide or show left navbar items based on the filter form visibility
         navbarItems.classList.toggle("hide");
       });
     </script>
