@@ -95,4 +95,3 @@ def purchase():
     # Redirect to cart view after purchase
     return redirect(url_for('books_more.view_cart'))
 
-
