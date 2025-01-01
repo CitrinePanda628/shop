@@ -28,20 +28,36 @@ def create_random_book(index):
 @books_more.route('/books', methods=['GET', 'POST'])
 def generate_books():
     if request.method == 'POST':
-        num_books = int(request.form.get('num_books', 10))
+        num_books = int(request.form.get('num_books', session.get('num_books', 10)))
+        session['num_books'] = num_books
         session['books'] = [create_random_book(i) for i in range(num_books)]
-    
-    books = session.get('books', [])
-    return render_template('home/web.html', books=books, num_books=len(books))
+        session['filtered_books'] = session['books']
+        print(f"Books generated and stored in session: {session['books']}")  # Debug log
+    elif not session.get('books'):
+        num_books = session.get('num_books', 10)
+        session['books'] = [create_random_book(i) for i in range(num_books)]
+        session['filtered_books'] = session['books']
+        print(f"Default books initialized: {session['books']}")  # Debug log
+
+    books = session.get('filtered_books', session.get('books', []))
+    num_books = len(books)
+    return render_template('home/web.html', books=books, num_books=num_books)
+
 
 @books_more.route('/book/<string:id>', methods=['GET'])
 def book(id):
     books = session.get('books', [])
     selected_book = next((book for book in books if book['id'] == id), None)
+
+    # Debugging: Check if selected_book is None
+    if selected_book is None:
+        print(f"Book with ID {id} not found.")  # Debug log
+
     if selected_book:
         return render_template('home/book_details.html', book=selected_book)
     else:
-        return "Book not found", 404
+        return "Book not found", 404  # Return a message if book is not found
+
 
 @books_more.route('/add-to-cart/<string:id>', methods=['POST'])
 def add_to_cart(id):
@@ -89,27 +105,60 @@ def purchase():
     # Redirect to cart view after purchase
     return redirect(url_for('books_more.view_cart'))
 
-@books_more.route('/filter', methods=['POST', 'GET'])
+
+
+
+@books_more.route('/filter', methods=['GET'])
 def filter_books():
-    books = session.get('books', [])
-    
-    category = request.form.get('category')
-    rating = request.form.get('rating')
-    price_order = request.form.get('price')
-    author = request.form.get('author')
-    name = request.form.get('name')
+    # Retrieve all books from the session
+    all_books = session.get('books', [])
+    if not all_books:
+        return "No books available to filter", 400  # Ensure there are books to filter
 
-    filtered_books = books
+    # Get filter criteria from request arguments
+    category = request.args.get('category', '').strip()
+    rating = request.args.get('rating', '').strip()
+    price = request.args.get('price', '').strip()
 
-    # Apply filters one by one
+    # Start with all books as the base for filtering
+    filtered_books = all_books
+
+    # Apply category filter
     if category:
         filtered_books = [book for book in filtered_books if book['category'].lower() == category.lower()]
+
+    # Apply rating filter
     if rating:
-        filtered_books = [book for book in filtered_books if book['rating'] >= float(rating)]
+        try:
+            rating_value = float(rating)
+            filtered_books = [book for book in filtered_books if book['rating'] >= rating_value]
+        except ValueError:
+            return "Invalid rating value", 400  # Handle invalid rating input
 
-    if author:
-        filtered_books = [book for book in filtered_books if author.lower() in book['author'].lower()]
-    if name:
-        filtered_books = [book for book in filtered_books if name.lower() in book['name'].lower()]
+    # Apply price filter
+    if price:
+        try:
+            price_ranges = {
+                "1": (0, 10),
+                "2": (10, 20),
+                "3": (20, 30),
+                "4": (30, 40),
+                "5": (40, float('inf'))
+            }
+            min_price, max_price = price_ranges.get(price, (0, float('inf')))
+            filtered_books = [book for book in filtered_books if min_price <= book['price'] < max_price]
+        except (ValueError, KeyError):
+            return "Invalid price range value", 400  # Handle invalid price input
 
-    return render_template('home/web.html', books=filtered_books, num_books=len(filtered_books))
+    # Update session with the filtered books
+    session['filtered_books'] = filtered_books
+
+    # Render the template with the filtered books and slider values
+    return render_template(
+        'home/web.html', 
+        books=filtered_books, 
+        num_books=len(filtered_books), 
+        category=category, 
+        rating=rating, 
+        price=price
+    )

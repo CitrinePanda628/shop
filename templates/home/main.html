@@ -20,12 +20,10 @@
         background-color: #f8f9fa;
       }
 
-      /* Main content area */
       .main-content {
         padding-top: 20px;
       }
 
-      /* Customizing the navbar */
       .navbar {
         z-index: 999;
       }
@@ -35,7 +33,6 @@
         margin-left: 5px;
       }
 
-      /* Aligning items in navbar */
       .navbar .left-nav-items {
         display: flex;
         justify-content: flex-start;
@@ -47,13 +44,12 @@
         justify-content: flex-end;
       }
 
-      /* Filter form styling */
       .filter-form {
         display: none;
         flex-wrap: wrap;
         justify-content: flex-start;
         gap: 8px;
-        background-color: #343a40; /* Match navbar background */
+        background-color: #343a40;
         padding: 10px;
         border-radius: 5px;
       }
@@ -64,22 +60,18 @@
         margin-bottom: 10px;
       }
 
-      /* Toggle active class styling */
       .filter-form.active {
         display: flex;
       }
 
-      /* Hide other navbar items when filter is shown */
       .navbar .left-nav-items.hide {
         display: none;
       }
     </style>
   </head>
   <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <!-- Left side of navbar -->
         <div class="left-nav-items">
           <a class="navbar-brand" href="/">Book Store</a>
           <button
@@ -113,9 +105,7 @@
           </div>
         </div>
 
-        <!-- Right side of navbar for filters -->
         <div class="right-nav-items">
-          <!-- Toggle button to show/hide filters -->
           <button
             class="btn btn-outline-light toggle-filters-btn"
             type="button"
@@ -124,11 +114,16 @@
             <i class="fas fa-filter"></i> Filters
           </button>
 
-          <!-- Filter Form in Navbar (Initially hidden) -->
           <div class="filter-form" id="filter-form">
-            <form action="/filter" method="POST" class="form-inline flex-wrap">
-              <input class="form-control mb-2 mr-2" type="search" placeholder="Name" name="name" />
-              <input class="form-control mb-2 mr-2" type="search" placeholder="Author" name="author" />
+            <form action="/filter" method="GET" class="form-inline flex-wrap">
+              <select class="form-control mb-2 mr-2" name="price">
+                <option value="">Price</option>
+                <option value="1">0-10</option>
+                <option value="2">10-20</option>
+                <option value="3">20-30</option>
+                <option value="4">30-40</option>
+                <option value="5">40 and above</option>
+              </select>
               <select class="form-control mb-2 mr-2" name="rating">
                 <option value="">Rating</option>
                 <option value="1">1 Star</option>
@@ -150,25 +145,21 @@
               </select>
               <button class="btn btn-primary mb-2" type="submit">Apply</button>
             </form>
-            
           </div>
         </div>
       </div>
     </nav>
 
-    <!-- Main content area -->
     <div class="main-content">
       {% block content %}{% endblock %}
     </div>
 
-    <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3">
       <div class="container">
         <small>&copy; 2024 Book Store. All rights reserved.</small>
       </div>
     </footer>
 
-    <!-- Script includes -->
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5/5hb7O9v1d6pT4PeRM3F+3jfFjE6oTFbW8P2z5"
@@ -180,7 +171,6 @@
       crossorigin="anonymous"
     ></script>
 
-    <!-- Custom Script to Toggle Filters and Navbar Items -->
     <script>
       const toggleBtn = document.getElementById("toggle-filters-btn");
       const filterForm = document.getElementById("filter-form");
